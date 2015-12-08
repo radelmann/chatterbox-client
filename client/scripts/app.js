@@ -42,18 +42,20 @@ app.fetch = function() {
 }
 
 app.successSend = function() {
+  app.fetch();
 
 }
 
 app.successFetch = function(data) {
+  app.clearMessages();
   _.each(data["results"], function(item) {
-    app.addMessage(item)  
+    app.addMessage(item);  
   })
 }
 
 app.clearMessages = function() {
   $("#chats").children().each(function() {
-    $(this).remove()
+    $(this).remove();
   });
 }
 
