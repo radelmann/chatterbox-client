@@ -3,7 +3,7 @@ $(document).ready(function() {
     app.handleSubmit();
   });
 
-  $('#main').on('click', '.username', function() {
+  $('#main').on('click', '.chat-user', function() {
     app.addFriend();
   });
 });
@@ -55,14 +55,26 @@ app.clearMessages = function() {
 }
 
 app.addMessage = function(data) {
-  var $chats = $("#chats")
-  var $message = $('<div><span class="username">' + data.username + '</span> ' + data.message + '<br>' + data.roomName + '</div>');
-  $message.appendTo($chats);
+  var $chats = $("#chats");
+  var $chatBody = $('<div class="chat"></div>');
+  
+  var $chatUser = $('<span class="chat-user"></span>');
+  $chatUser.text(data.username);
+  var $chatMessage = $('<span class="chat-message"></span>');
+  $chatMessage.text(data.message);
+  var $chatRoom = $('<span class="chat-room"></span>');
+  $chatRoom.text(data.roomName);
+
+  $chatUser.appendTo($chatBody);
+  $chatMessage.appendTo($chatBody);
+  $chatRoom.appendTo($chatBody);
+
+  $chatBody.appendTo($chats);
 }
 
 app.addRoom = function(roomName) {
   var $rooms = $("#roomSelect")
-  var $roomName = $('<div>' + roomName + '</div>');
+  var $roomName = $('<div class="chat-room-select">' + roomName + '</div>');
   $roomName.appendTo($rooms);
 }
 
