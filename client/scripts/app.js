@@ -7,6 +7,10 @@ $(document).ready(function() {
     app.addFriend();
   });
 
+  $('#refresh').on('click', function() {
+    app.fetch();
+  });
+
   app.init();
   app.fetch();
 });
@@ -61,18 +65,18 @@ app.clearMessages = function() {
 
 app.addMessage = function(data) {
   var $chats = $("#chats");
-  var $chatBody = $('<div class="chat"></div>');
+  var $chatBody = $('<div class="chat '+data.roomname+'" ></div>');
   
-  var $chatUser = $('<span class="chat-user"></span>');
+  var $chatUser = $('<div class="chat-user"></div>');
   $chatUser.text(data.username);
-  var $chatMessage = $('<span class="chat-message"></span>');
+  var $chatMessage = $('<div class="chat-message"></div>');
   $chatMessage.text(data.text);
-  var $chatRoom = $('<span class="chat-room"></span>');
-  $chatRoom.text(data.roomname);
+  // var $chatRoom = $('<div class="chat-room"></div>');
+  // $chatRoom.text(data.roomname);
 
   $chatUser.appendTo($chatBody);
   $chatMessage.appendTo($chatBody);
-  $chatRoom.appendTo($chatBody);
+  // $chatRoom.appendTo($chatBody);
 
   $chatBody.appendTo($chats);
 }

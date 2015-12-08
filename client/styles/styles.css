@@ -1,8 +1,10 @@
+
+
 body {
-    background: #eee;
+    background: #FFF;
     text-align: center;
     padding: 0 25px;
-    font-family: arial, sans-serif;
+    font-family: helvetica, arial, sans-serif;
 }
 
 #main, #chats {
@@ -10,9 +12,20 @@ body {
     margin: auto;
     text-align: left;
     background: white;
-    padding: 50px 60px;
+    /*padding: 50px 60px;
     border: solid #ddd;
-    border-width: 0 1px 1px 1px;
+    border-width: 0 1px 1px 1px;*/*/
+}
+
+#chats { 
+    width: 500px;
+    margin: auto;
+    text-align: left;
+    background: white;
+    padding-top:10px;
+    /*padding: 50px 60px;*/
+    /*border: solid #ddd;
+    border-width: 0 1px 1px 1px;*/
 }
 
 #main h1 {
@@ -63,6 +76,7 @@ form input[type=text] {
     padding: 5px;
     margin-bottom: 5px;
     background-color: #eee;
+    border-radius: 5px;
 }
 
 .chat .chat-user {
@@ -70,7 +84,7 @@ form input[type=text] {
 }
 
 .chat-message {
-
+    margin:10px;
 }
 
 .chat-room {
@@ -96,5 +110,14 @@ form input[type=text] {
 }
 
 .submit {
-    background-color: #000;
+    /*background-color: */
+}
+
+.message-input {
+    height:75px;
+    width:490px;
+}
+
+.buttons {
+    text-align: right;
 }
