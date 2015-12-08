@@ -11,6 +11,15 @@ $(document).ready(function() {
     app.fetch();
   });
 
+  $('#roomSelect').on('change', function() {
+    //$(this)
+    if($(this).val() === "Add a Room...") {
+      var newRoom = prompt("Room name?")
+    }
+    $(this).val()
+    
+  });
+
   app.init();
   app.fetch();
 });
@@ -20,8 +29,11 @@ var app = {};
 app.init = function() {
   app.server = "https://api.parse.com/1/classes/chatterbox";
   var rawUserName = window.location.search;
-  app.userName = rawUserName.slice(rawUserName.indexOf("=")+1); 
+  app.userName = rawUserName.slice(rawUserName.indexOf("=") + 1);
   app.roomName = "myRoom";
+  app.rooms = {
+    myRoom: "myRoom"
+  };
 }
 
 app.send = function(msg) {
@@ -53,8 +65,28 @@ app.successSend = function() {
 app.successFetch = function(data) {
   app.clearMessages();
   _.each(data["results"], function(item) {
-    app.addMessage(item);  
-  })
+    app.addMessage(item);
+    //if not Object.hasOwnProperty(item.roomname)
+    if (!app.rooms.hasOwnProperty(item.roomname)) {
+      app.rooms[item.roomname] = item.roomname;
+    }
+  });
+
+  var $roomSelect = $('#roomSelect')
+    var $room = $("<option value='Select'>Select...</option>");    
+    $room.appendTo($roomSelect);
+    $room = $("<option value='Add a Room'>Add a Room...</option>");    
+      //append it to the roomSelect
+    $room.appendTo($roomSelect);
+
+  for (var room in app.rooms) {
+    if (app.rooms[room] && app.rooms[room] !== "") {
+      var $room = $("<option value='"+ app.rooms[room] + "'></option>");
+      $room.text(app.rooms[room]);    
+      //append it to the roomSelect
+      $room.appendTo($roomSelect);
+    }
+  }
 }
 
 app.clearMessages = function() {
@@ -65,8 +97,8 @@ app.clearMessages = function() {
 
 app.addMessage = function(data) {
   var $chats = $("#chats");
-  var $chatBody = $('<div class="chat '+data.roomname+'" ></div>');
-  
+  var $chatBody = $('<div class="chat ' + data.roomname + '" ></div>');
+
   var $chatUser = $('<div class="chat-user"></div>');
   $chatUser.text(data.username);
   var $chatMessage = $('<div class="chat-message"></div>');

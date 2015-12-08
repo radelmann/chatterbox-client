@@ -121,3 +121,12 @@ form input[type=text] {
 .buttons {
     text-align: right;
 }
+
+.room-select-container {
+    margin-top: 10px;
+    margin-bottom:10px;
+}
+
+.hidden {
+    display: none;
+}
