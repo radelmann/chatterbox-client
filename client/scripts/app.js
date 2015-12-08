@@ -1,19 +1,23 @@
 $(document).ready(function() {
-  $('#send').on('submit', function() {
+  $('#send').on('click', function() {
     app.handleSubmit();
   });
 
   $('#main').on('click', '.chat-user', function() {
     app.addFriend();
   });
+
+  app.init();
+  app.fetch();
 });
 
 var app = {};
 
-app.server = "https://api.parse.com/1/classes/chatterbox"
-
 app.init = function() {
-
+  app.server = "https://api.parse.com/1/classes/chatterbox";
+  var rawUserName = window.location.search;
+  app.userName = rawUserName.slice(rawUserName.indexOf("=")+1); 
+  app.roomName = "myRoom";
 }
 
 app.send = function(msg) {
@@ -22,7 +26,6 @@ app.send = function(msg) {
     url: app.server,
     data: JSON.stringify(msg),
     success: app.successSend,
-    dataType: 'jsonp',
     error: function(data) {
       console.log("error")
     }
@@ -34,7 +37,6 @@ app.fetch = function() {
     type: "GET",
     url: app.server,
     success: app.successFetch,
-    dataType: 'jsonp'
   });
 
 }
@@ -44,8 +46,9 @@ app.successSend = function() {
 }
 
 app.successFetch = function(data) {
-  console.log(data)
-
+  _.each(data["results"], function(item) {
+    app.addMessage(item)  
+  })
 }
 
 app.clearMessages = function() {
@@ -61,9 +64,9 @@ app.addMessage = function(data) {
   var $chatUser = $('<span class="chat-user"></span>');
   $chatUser.text(data.username);
   var $chatMessage = $('<span class="chat-message"></span>');
-  $chatMessage.text(data.message);
+  $chatMessage.text(data.text);
   var $chatRoom = $('<span class="chat-room"></span>');
-  $chatRoom.text(data.roomName);
+  $chatRoom.text(data.roomname);
 
   $chatUser.appendTo($chatBody);
   $chatMessage.appendTo($chatBody);
@@ -82,6 +85,11 @@ app.addFriend = function(friend) {
   console.log('friend');
 }
 
-app.handleSubmit = function() {
-  console.log('submit');
+app.handleSubmit = function(data) {
+  var message = {
+    username: app.userName,
+    text: $('#message').val(),
+    roomname: app.roomName
+  }
+  app.send(message);
 }
