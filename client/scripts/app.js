@@ -13,11 +13,18 @@ $(document).ready(function() {
 
   $('#roomSelect').on('change', function() {
     //$(this)
-    if($(this).val() === "Add a Room...") {
-      var newRoom = prompt("Room name?")
+    if ($(this).val() === "Add a Room") {
+      app.roomName = prompt("Room name?");
+
+      var $roomSelect = $('#roomSelect')
+      var $room = $("<option value='" + app.roomName + "'></option>");
+      $room.text(app.roomName);
+      $room.appendTo($roomSelect);
+
+      $('#roomSelect').val(app.roomName).change();
+    } else {
+      app.filterChats($(this).val());
     }
-    $(this).val()
-    
   });
 
   app.init();
@@ -25,6 +32,11 @@ $(document).ready(function() {
 });
 
 var app = {};
+
+app.filterChats = function(roomName) {
+  $('#chats').children().hide();
+  $('.' + roomName).show();
+}
 
 app.init = function() {
   app.server = "https://api.parse.com/1/classes/chatterbox";
@@ -73,16 +85,16 @@ app.successFetch = function(data) {
   });
 
   var $roomSelect = $('#roomSelect')
-    var $room = $("<option value='Select'>Select...</option>");    
-    $room.appendTo($roomSelect);
-    $room = $("<option value='Add a Room'>Add a Room...</option>");    
-      //append it to the roomSelect
-    $room.appendTo($roomSelect);
+  var $room = $("<option value='Select'>Select...</option>");
+  $room.appendTo($roomSelect);
+  $room = $("<option value='Add a Room'>Add a Room...</option>");
+  //append it to the roomSelect
+  $room.appendTo($roomSelect);
 
   for (var room in app.rooms) {
     if (app.rooms[room] && app.rooms[room] !== "") {
-      var $room = $("<option value='"+ app.rooms[room] + "'></option>");
-      $room.text(app.rooms[room]);    
+      var $room = $("<option value='" + app.rooms[room] + "'></option>");
+      $room.text(app.rooms[room]);
       //append it to the roomSelect
       $room.appendTo($roomSelect);
     }
