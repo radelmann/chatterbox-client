@@ -1,12 +1,19 @@
-// YOUR CODE HERE:
+$(document).ready(function() {
+  $('#send').on('submit', function() {
+    app.handleSubmit();
+  });
+
+  $('#main').on('click', '.username', function() {
+    app.addFriend();
+  });
+});
+
 var app = {};
 
 app.server = "https://api.parse.com/1/classes/chatterbox"
 
 app.init = function() {
- $('#main').on('click', '.username', function() {
-    app.addFriend();
-  });
+
 }
 
 app.send = function(msg) {
@@ -61,4 +68,8 @@ app.addRoom = function(roomName) {
 
 app.addFriend = function(friend) {
   console.log('friend');
+}
+
+app.handleSubmit = function() {
+  console.log('submit');
 }
