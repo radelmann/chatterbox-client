@@ -12,21 +12,6 @@ $(document).ready(function() {
     app.fetch();
   });
 
-  $('#roomSelect').on('change', function() {
-    if ($(this).val() === "Add a Room") {
-      app.roomName = prompt("Room name?");
-
-      var $roomSelect = $('#roomSelect')
-      var $room = $("<option value='" + app.roomName + "'></option>");
-      $room.text(app.roomName);
-      $room.appendTo($roomSelect);
-
-      $('#roomSelect').val(app.roomName).change();
-    } else {
-      app.filterChats($(this).val());
-    }
-  });
-
   app.init();
   app.fetch();
 });
@@ -44,9 +29,17 @@ app.init = function() {
   var rawUserName = window.location.search;
   app.currentUser = rawUserName.slice(rawUserName.indexOf("=") + 1);
   app.currentRoom = "myRoom";
-  app.rooms = {
-    myRoom: "myRoom"
-  };
+  app.rooms = {};
+}
+
+app.initRooms = function() {
+  app.rooms = {};
+}
+
+app.addRoom = function(roomName) {
+  if (!app.rooms.hasOwnProperty(roomName)) {
+    app.rooms[roomName] = roomName;
+  }
 }
 
 app.send = function(msg) {
@@ -92,41 +85,28 @@ app.successSend = function() {
 app.successFetch = function(data) {
   app.clearMessages();
 
-  //create messages collection and load with data[results]
-
   var messages = new Messages(data['results']);
 
   var messagesView = new MessagesView({
     collection: messages
   });
 
-  // Append it to the page (uncomment this when you are ready):
   $('.chats-container').append(messagesView.render());
-  // messagesView.render();
-  ///create messages view and render
 
-  // _.each(data["results"], function(item) {
-  //   app.addMessage(item);
-  //   if (!app.rooms.hasOwnProperty(item.roomname)) {
-  //     app.rooms[item.roomname] = item.roomname;
-  //   }
-  // });
+  var roomsData = _.map(app.rooms, function(value) {
+    return {
+      'value': value
+    };
+  });
 
-  // var $roomSelect = $('#roomSelect')
-  // var $room = $("<option value='Select'>Select...</option>");
-  // $room.appendTo($roomSelect);
-  // $room = $("<option value='Add a Room'>Add a Room...</option>");
-  // //append it to the roomSelect
-  // $room.appendTo($roomSelect);
+  var rooms = new Rooms(roomsData);
+  var roomsView = new RoomsView({
+    collection: rooms
+  });
 
-  // for (var room in app.rooms) {
-  //   if (app.rooms[room] && app.rooms[room] !== "") {
-  //     var $room = $("<option value='" + app.rooms[room] + "'></option>");
-  //     $room.text(app.rooms[room]);
-  //     //append it to the roomSelect
-  //     $room.appendTo($roomSelect);
-  //   }
-  // }
+  $('.room-select-container').append(roomsView.render());
+
+  app.addRoomSelectHandler();
 }
 
 app.escapeHtml = function(str) {
@@ -135,27 +115,76 @@ app.escapeHtml = function(str) {
   return div.innerHTML;
 }
 
+app.addRoomSelectHandler = function() {
+  $('#roomSelect').on('change', function() {
+    if ($(this).val() === "Add a Room") {
+      app.roomName = prompt("Room name?");
+
+      var $roomSelect = $('#roomSelect')
+      var $room = $("<option value='" + app.roomName + "'></option>");
+      $room.text(app.roomName);
+      $room.appendTo($roomSelect);
+
+      $('#roomSelect').val(app.roomName).change();
+    } else {
+      app.filterChats($(this).val());
+    }
+  });
+}
+
+//Rooms backbone
+var Room = Backbone.Model.extend({
+  initialize: function() {}
+});
+
+var RoomView = Backbone.View.extend({
+  initialize: function() {
+    //this.model.on('change:votes', this.render, this);
+  },
+  render: function() {
+    var html = [
+      '<option class="room-select-item">',
+      app.escapeHtml(this.model.get('value')),
+      '</option>'
+    ].join('');
+
+    this.$el.html(html);
+    return this.$el.find('.room-select-item');
+  }
+});
+
+var Rooms = Backbone.Collection.extend({
+  model: Room
+});
+
+var RoomsView = Backbone.View.extend({
+  initialize: function() {
+    //this.collection.on('change:votes', this.render, this);
+  },
+  render: function() {
+    var html = [
+      '<select id="roomSelect">',
+      '</select>'
+    ].join('');
+
+    this.$el.html(html);
+
+    this.$el.find('#roomSelect').append(this.collection.map(function(room) {
+      var roomView = new RoomView({
+        model: room
+      });
+      return roomView.render();
+    }));
+
+    return this.$el.find("#roomSelect");
+  }
+});
+
 //backbone mvc
 var Message = Backbone.Model.extend({
-  /* This is purposely different from the previous steps.
-   * Make sure to do those first (!!!) and then check here for new patterns. */
-
   initialize: function() {
     //this.set('message', message);
-  },
-  // Default to 0 votes
-  // defaults: {
-  //   votes: 0
-  // },
-  // Convenience function over `model.get/set`
-  // votes: function(votes) {
-  //   if (arguments.length) {
-  //     this.set('votes', votes);
-  //     return votes;
-  //   } else {
-  //     return this.get('votes');
-  //   }
-  // }
+  }
 });
 
 var MessageView = Backbone.View.extend({
@@ -174,6 +203,8 @@ var MessageView = Backbone.View.extend({
       '</div>'
     ].join('');
 
+    app.addRoom(this.model.get('roomname'));
+
     return this.$el.html(html);
   }
 });
@@ -183,16 +214,9 @@ var Messages = Backbone.Collection.extend({
 });
 
 var MessagesView = Backbone.View.extend({
-  /* Again, we use our initialize function to register listeners.
-   * In this case, we want to know when votecounts of the models
-   * in our collection changes. */
   initialize: function() {
-    /* Backbone events bubble up through collections,
-     * so monitoring a model in a collection is easy! */
     //this.collection.on('change:votes', this.render, this);
   },
-
-  // Now we must render the collection:
   render: function() {
     var html = [
       '<div class="chats">',
@@ -200,6 +224,8 @@ var MessagesView = Backbone.View.extend({
     ].join('');
 
     this.$el.html(html);
+
+    app.initRooms();
 
     this.$el.find('.chats').append(this.collection.map(function(message) {
       var messageView = new MessageView({
