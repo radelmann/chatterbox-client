@@ -71,14 +71,12 @@ app.fetch = function() {
 
 app.successSend = function() {
   app.fetch();
-
 }
 
 app.successFetch = function(data) {
   app.clearMessages();
   _.each(data["results"], function(item) {
     app.addMessage(item);
-    //if not Object.hasOwnProperty(item.roomname)
     if (!app.rooms.hasOwnProperty(item.roomname)) {
       app.rooms[item.roomname] = item.roomname;
     }

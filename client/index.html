@@ -8,33 +8,27 @@
     <!-- dependencies -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/backbone/backbone.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
-    <script src="scripts/app.js"></script>
+    <script src="scripts/app-mvc.js"></script>
   </head>
   <body>
     <div id="main">
-
       <h1>Chatterbox</h1>
-      <!-- Your HTML goes here! -->
       <div class="room-select-container">Select a room:
-          <select id ="roomSelect">
-            <!-- <option value=""></option> -->
-
-          </select>
+        <select id ="roomSelect">
+        
+        </select>
       </div>
-
       <textarea id="message" class='message-input'></textarea>
       
       <div class="buttons">
         <button class="submit" id="refresh" type="submit">Refresh</button>
-      <button class="submit" id="send" type="submit">Submit</button>
-        
+        <button class="submit" id="send" type="submit">Submit</button>
       </div>
       
-      
-    
-      <div id="chats">
+      <div class="chats-container">
         
       </div>
     </div>
